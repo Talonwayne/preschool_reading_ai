@@ -1,0 +1,70 @@
+2025-07-16 16:44:24,894 - INFO - 🎓 Starting Preschool Reading AI - Simplified Version
+2025-07-16 16:44:24,895 - INFO - 🚀 Starting Preschool Reading AI - Simplified Voice Mode
+2025-07-16 16:44:24,895 - INFO - ✅ Audio system ready - Sample rate: 48000 Hz
+2025-07-16 16:44:24,895 - INFO - 🎯 Starting automatic alphabet lesson
+2025-07-16 16:44:38,094 - INFO - 👩‍🏫 Teacher beginning alphabet lesson
+2025-07-16 16:44:38,095 - INFO - 👩‍🏫 Teacher says: 🎵 The teacher is teaching the alphabet...
+2025-07-16 16:44:38,598 - INFO - 👩‍🏫 Teacher says: 📚 'Hello! Let's learn about letters today!'
+2025-07-16 16:44:39,099 - INFO - 👩‍🏫 Teacher says: 🔤 'A is for Apple - can you say A-A-Apple?'
+2025-07-16 16:44:39,600 - INFO - 👩‍🏫 Teacher says: 🅱️ 'B is for Ball - B-B-Ball!'
+2025-07-16 16:44:40,102 - INFO - 👩‍🏫 Teacher says: ©️ 'C is for Cat - C-C-Cat!'
+2025-07-16 16:44:40,603 - INFO - 👩‍🏫 Teacher says: 🎉 'Great job! You're learning your letters!'
+2025-07-16 16:44:43,105 - INFO - 🔄 Starting voice session #1
+2025-07-16 16:45:22,216 - INFO - 🎤 User input: ''
+2025-07-16 16:45:26,595 - INFO - 🎤 Audio recorded: 380 chunks, ~38.0s duration
+2025-07-16 16:45:26,595 - INFO - 🤔 Teacher is thinking about the student's question...
+2025-07-16 16:45:26,597 - INFO - 🎯 Processing student's voice input through AI pipeline
+2025-07-16 16:45:28,597 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-07-16 16:45:29,290 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-07-16 16:45:30,782 - INFO - 📚 Getting lesson plan for: Student
+2025-07-16 16:45:30,782 - INFO - 📖 Lesson plan retrieved: {'learning_objective': 'Alphabet recognition and letter sounds', 'lesson_steps': ['Learn letters A, B, C', 'Practice sounds', 'Have fun!'], 'target_skills': ['letter recognition', 'phonemic awareness'], 'personalization_notes': 'Focus on fun and encouragement'}
+2025-07-16 16:45:31,047 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-07-16 16:45:31,767 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-07-16 16:45:32,896 - INFO - HTTP Request: POST https://api.openai.com/v1/traces/ingest "HTTP/1.1 204 No Content"
+2025-07-16 16:45:37,678 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/speech "HTTP/1.1 200 OK"
+2025-07-16 16:45:38,211 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/speech "HTTP/1.1 200 OK"
+2025-07-16 16:45:38,832 - INFO - HTTP Request: POST https://api.openai.com/v1/traces/ingest "HTTP/1.1 204 No Content"
+2025-07-16 16:45:39,685 - INFO - HTTP Request: POST https://api.openai.com/v1/traces/ingest "HTTP/1.1 204 No Content"
+2025-07-16 16:45:40,204 - INFO - HTTP Request: POST https://api.openai.com/v1/traces/ingest "HTTP/1.1 204 No Content"
+2025-07-16 16:45:40,882 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/speech "HTTP/1.1 200 OK"
+2025-07-16 16:45:41,700 - INFO - 👩‍🏫 Teacher responding with 6 audio chunks
+2025-07-16 16:45:41,700 - INFO - 🎵 Playing teacher response: ~4.5s duration
+2025-07-16 16:45:46,390 - INFO - ✅ Teacher response completed successfully
+2025-07-16 16:45:46,391 - INFO - 🔄 Starting voice session #2
+2025-07-16 16:45:46,411 - INFO - HTTP Request: POST https://api.openai.com/v1/traces/ingest "HTTP/1.1 204 No Content"
+2025-07-16 16:45:50,906 - INFO - 🎤 User input: ''
+2025-07-16 16:45:54,303 - INFO - 🎤 Audio recorded: 289 chunks, ~28.9s duration
+2025-07-16 16:45:54,303 - INFO - 🤔 Teacher is thinking about the student's question...
+2025-07-16 16:45:54,304 - INFO - 🎯 Processing student's voice input through AI pipeline
+2025-07-16 16:45:55,931 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-07-16 16:45:56,377 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-07-16 16:45:57,035 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-07-16 16:46:01,883 - INFO - 🗣️ Creating pronunciation guide for sound: str
+2025-07-16 16:46:01,884 - INFO - 🗣️ Pronunciation guide created: {'mouth_position': "Let's practice this sound step by step", 'demonstration': 'Watch how I make this sound', 'practice_steps': ['Listen to the sound', 'Try to copy it', 'Practice slowly'], 'encouragement': 'Every sound is learnable with practice!'}
+2025-07-16 16:46:01,884 - INFO - 🗣️ Creating pronunciation guide for sound: ts
+2025-07-16 16:46:01,884 - INFO - 🗣️ Pronunciation guide created: {'mouth_position': "Let's practice this sound step by step", 'demonstration': 'Watch how I make this sound', 'practice_steps': ['Listen to the sound', 'Try to copy it', 'Practice slowly'], 'encouragement': 'Every sound is learnable with practice!'}
+2025-07-16 16:46:02,283 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-07-16 16:46:03,614 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/speech "HTTP/1.1 200 OK"
+2025-07-16 16:46:03,619 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/speech "HTTP/1.1 200 OK"
+2025-07-16 16:46:03,884 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/speech "HTTP/1.1 200 OK"
+2025-07-16 16:46:04,565 - INFO - 👩‍🏫 Teacher responding with 8 audio chunks
+2025-07-16 16:46:04,565 - INFO - 🎵 Playing teacher response: ~7.7s duration
+2025-07-16 16:46:12,447 - INFO - ✅ Teacher response completed successfully
+2025-07-16 16:46:12,448 - INFO - 🔄 Starting voice session #3
+2025-07-16 16:46:17,702 - INFO - 🎤 User input: ''
+2025-07-16 16:46:20,818 - INFO - 🎤 Audio recorded: 264 chunks, ~26.4s duration
+2025-07-16 16:46:20,818 - INFO - 🤔 Teacher is thinking about the student's question...
+2025-07-16 16:46:20,820 - INFO - 🎯 Processing student's voice input through AI pipeline
+2025-07-16 16:46:23,272 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-07-16 16:46:23,711 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-07-16 16:46:24,244 - INFO - HTTP Request: POST https://api.openai.com/v1/traces/ingest "HTTP/1.1 204 No Content"
+2025-07-16 16:46:25,118 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/speech "HTTP/1.1 200 OK"
+2025-07-16 16:46:25,529 - INFO - HTTP Request: POST https://api.openai.com/v1/traces/ingest "HTTP/1.1 204 No Content"
+2025-07-16 16:46:30,031 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/speech "HTTP/1.1 200 OK"
+2025-07-16 16:46:30,411 - INFO - 👩‍🏫 Teacher responding with 3 audio chunks
+2025-07-16 16:46:30,412 - INFO - 🎵 Playing teacher response: ~3.0s duration
+2025-07-16 16:46:32,181 - INFO - HTTP Request: POST https://api.openai.com/v1/traces/ingest "HTTP/1.1 204 No Content"
+2025-07-16 16:46:33,597 - INFO - ✅ Teacher response completed successfully
+2025-07-16 16:46:33,598 - INFO - 🔄 Starting voice session #4
+2025-07-16 16:46:37,518 - INFO - 👋 User requested to quit the program
+2025-07-16 16:46:37,520 - INFO - ✨ Preschool Reading AI session completed

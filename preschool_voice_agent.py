@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """
-Preschool Reading AI - Chained Voice Agent Example 
-Based on OpenAI's Agents SDK documentation for chained voice agents
+Preschool Reading AI - Simplified Voice Agent with Comprehensive Logging
+Based on OpenAI's Agents SDK for voice teaching
 """
 
 import asyncio
 import os
+import logging
+from datetime import datetime
 from typing import Dict, Any
 import numpy as np
 import sounddevice as sd
@@ -19,7 +21,7 @@ try:
     from agents.voice import AudioInput, SingleAgentVoiceWorkflow, VoicePipeline
     from pydantic import BaseModel
     from dotenv import load_dotenv
-    from database import db  # Import our learning database
+    # from database import db  # Commented out for simplified version
 except ImportError as e:
     print(f"Missing required package: {e}")
     print("Please install with: pip install openai-agents 'openai-agents[voice]' sounddevice numpy pydantic")
@@ -28,13 +30,24 @@ except ImportError as e:
 # Load environment variables from .env file
 load_dotenv()
 
+# Set up comprehensive logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('preschool_ai_session.log'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
+
 # Set your OpenAI API key
 if not os.getenv("OPENAI_API_KEY"):
     print("Please set your OPENAI_API_KEY environment variable or add it to your .env file")
     exit(1)
 
 # =============================================================================
-# TOOLS FOR PRESCHOOL READING
+# SIMPLIFIED TOOLS FOR PRESCHOOL READING
 # =============================================================================
 
 class StudentProfile(BaseModel):
@@ -47,79 +60,35 @@ class StudentProfile(BaseModel):
 
 @function_tool
 def get_student_profile(name: str) -> Dict[str, Any]:
-    """Get comprehensive student profile from database with learning analytics"""
-    return db.get_student_profile(name)
+    """Get student profile (simplified version)"""
+    logger.info(f"🔍 Getting student profile for: {name}")
+    profile = {
+        "name": name,
+        "age": 4,
+        "interests": ["learning", "stories", "fun"],
+        "learning_style": "visual",
+        "current_lesson": "alphabet"
+    }
+    logger.info(f"📋 Student profile retrieved: {profile}")
+    return profile
 
 @function_tool 
 def get_current_lesson_plan(student_name: str) -> Dict[str, Any]:
-    """Get the current active lesson plan for a student"""
-    plan = db.get_current_lesson_plan(student_name)
-    if plan:
-        return plan
-    else:
-        return {
-            "message": f"No active lesson plan found for {student_name}",
-            "learning_objective": "Alphabet recognition and letter sounds",
-            "lesson_steps": ["Assess current knowledge", "Introduce new letters", "Practice sounds", "Review and reinforce"],
-            "target_skills": ["letter recognition", "phonemic awareness"],
-            "personalization_notes": "Create lesson plan using lesson planner"
-        }
-
-@function_tool
-def record_learning_session(student_name: str, lesson_topic: str, agent_used: str, 
-                          effectiveness_rating: int, session_notes: str) -> Dict[str, Any]:
-    """Record details about a learning session for analysis"""
-    db.add_learning_session(
-        student_name=student_name,
-        lesson_topic=lesson_topic, 
-        agent_used=agent_used,
-        conversation_summary=session_notes,
-        effectiveness=effectiveness_rating,
-        notes=""
-    )
-    return {"status": "Session recorded successfully", "student": student_name}
-
-@function_tool
-def add_student_accomplishment(student_name: str, achievement: str, skill_category: str, 
-                             confidence_level: int) -> Dict[str, Any]:
-    """Add a learning accomplishment to the student's record"""
-    db.add_accomplishment(student_name, achievement, skill_category, confidence_level)
-    return {"status": "Accomplishment recorded", "achievement": achievement}
-
-@function_tool
-def update_student_learning_data(student_name: str, learning_observations: Dict[str, Any]) -> Dict[str, Any]:
-    """Update student profile with new learning insights"""
-    db.update_student_profile(student_name, learning_observations)
-    return {"status": "Profile updated", "student": student_name}
-
-@function_tool
-def create_new_lesson_plan(student_name: str, learning_objective: str, lesson_steps: list, 
-                          target_skills: list, personalization_notes: str) -> Dict[str, Any]:
-    """Create a personalized lesson plan for a student"""
-    plan_id = db.create_lesson_plan(
-        student_name=student_name,
-        learning_objective=learning_objective, 
-        lesson_steps=lesson_steps,
-        target_skills=target_skills,
-        personalization_notes=personalization_notes
-    )
-    return {
-        "status": "Lesson plan created",
-        "plan_id": plan_id,
-        "objective": learning_objective,
-        "student": student_name
+    """Get the current lesson plan (simplified version)"""
+    logger.info(f"📚 Getting lesson plan for: {student_name}")
+    plan = {
+        "learning_objective": "Alphabet recognition and letter sounds",
+        "lesson_steps": ["Learn letters A, B, C", "Practice sounds", "Have fun!"],
+        "target_skills": ["letter recognition", "phonemic awareness"],
+        "personalization_notes": "Focus on fun and encouragement"
     }
-
-@function_tool
-def get_parent_dashboard_data(student_name: str) -> Dict[str, Any]:
-    """Get comprehensive dashboard data for parents"""
-    return db.get_parent_dashboard(student_name)
+    logger.info(f"📖 Lesson plan retrieved: {plan}")
+    return plan
 
 @function_tool
 def create_personalized_story(lesson_topic: str, student_name: str) -> Dict[str, Any]:
     """Create a story that incorporates student interests and lesson objectives"""
-    profile = get_student_profile(student_name)
-    interests = profile.get("interests", ["adventure"])
+    logger.info(f"📖 Creating story for {student_name} about: {lesson_topic}")
     
     story_templates = {
         "letter_b": {
@@ -135,22 +104,27 @@ def create_personalized_story(lesson_topic: str, student_name: str) -> Dict[str,
     }
     
     # Find matching story
-    main_interest = interests[0] if interests else "adventure"
+    main_interest = "adventure"
     if lesson_topic in story_templates and main_interest in story_templates[lesson_topic]:
         story = story_templates[lesson_topic][main_interest]
     else:
         story = f"Once upon a time, a brave student loved to learn about {lesson_topic}. They practiced every day and became very smart!"
     
-    return {
+    result = {
         "story": story,
         "lesson_focus": lesson_topic,
-        "personalization": f"Story created for {student_name} based on their love of {main_interest}",
+        "personalization": f"Story created for {student_name}",
         "practice_words": ["THE", "AND", "TO", "SAID", "YOU", "MY"] if lesson_topic == "sight_words" else ["B", "BALL", "BOOK", "BEAUTIFUL"]
     }
+    
+    logger.info(f"📚 Story created: {result}")
+    return result
 
 @function_tool
 def create_pronunciation_guide(sound: str, difficulty_reason: str) -> Dict[str, Any]:
     """Create detailed pronunciation help for specific sounds"""
+    logger.info(f"🗣️ Creating pronunciation guide for sound: {sound}")
+    
     guides = {
         "b": {
             "mouth_position": "Press your lips together, then let them pop open",
@@ -172,16 +146,21 @@ def create_pronunciation_guide(sound: str, difficulty_reason: str) -> Dict[str, 
         }
     }
     
-    return guides.get(sound, {
+    result = guides.get(sound, {
         "mouth_position": "Let's practice this sound step by step",
         "demonstration": "Watch how I make this sound",
         "practice_steps": ["Listen to the sound", "Try to copy it", "Practice slowly"],
         "encouragement": "Every sound is learnable with practice!"
     })
+    
+    logger.info(f"🗣️ Pronunciation guide created: {result}")
+    return result
 
 @function_tool
 def create_learning_quiz(topic: str, difficulty: str) -> Dict[str, Any]:
     """Create an engaging quiz or game for assessment"""
+    logger.info(f"🎮 Creating quiz for topic: {topic}, difficulty: {difficulty}")
+    
     quizzes = {
         "letter_sounds": {
             "easy": {
@@ -216,18 +195,19 @@ def create_learning_quiz(topic: str, difficulty: str) -> Dict[str, Any]:
         }
     }
     
-    return quizzes.get(topic, {}).get(difficulty, {
+    result = quizzes.get(topic, {}).get(difficulty, {
         "format": "Learning Check",
         "questions": ["What did we learn today?", "Can you try that again?", "What was your favorite part?"],
         "game_element": "Let's see how much you learned!"
     })
+    
+    logger.info(f"🎮 Quiz created: {result}")
+    return result
 
 @function_tool
 def simplify_concept(original_concept: str, confusion_area: str, student_name: str) -> Dict[str, Any]:
     """Simplify and reframe concepts when student is confused"""
-    profile = get_student_profile(student_name)
-    interests = profile.get("interests", ["fun"])
-    learning_style = profile.get("learning_style", "visual")
+    logger.info(f"💡 Simplifying concept: {original_concept} for {student_name}")
     
     simplifications = {
         "letter_sounds": {
@@ -247,29 +227,23 @@ def simplify_concept(original_concept: str, confusion_area: str, student_name: s
         }
     }
     
-    style_approach = simplifications.get(original_concept, {}).get(learning_style, "Let's try a different way to think about this")
+    style_approach = simplifications.get(original_concept, {}).get("visual", "Let's try a different way to think about this")
     
-    # Add interest-based metaphor
-    interest_metaphor = ""
-    if "unicorns" in interests:
-        interest_metaphor = "like magical unicorn spells"
-    elif "dinosaurs" in interests:
-        interest_metaphor = "like how dinosaurs communicate"
-    elif "fairy_tales" in interests:
-        interest_metaphor = "like fairy tale magic"
-    
-    return {
+    result = {
         "simplified_explanation": style_approach,
-        "interest_connection": interest_metaphor,
-        "new_approach": f"Let's think of it {interest_metaphor} - {style_approach}",
+        "interest_connection": "like magical learning spells",
+        "new_approach": f"Let's think of it like magical learning spells - {style_approach}",
         "encouragement": "Sometimes we need to look at things in a new way, and that's perfectly okay!"
     }
+    
+    logger.info(f"💡 Concept simplified: {result}")
+    return result
 
 # =============================================================================
-# SPECIALIZED AGENTS FOR ADVANCED PRESCHOOL READING
+# SIMPLIFIED AGENTS FOR PRESCHOOL READING
 # =============================================================================
 
-# Base Patient Teacher System Prompt - Based on OpenAI's guidance
+# Base Patient Teacher System Prompt - ENHANCED FOR SHORT RESPONSES
 base_teacher_prompt = """
 You are a warm, patient, and encouraging preschool reading teacher. Your voice will be converted to speech, so:
 
@@ -286,15 +260,21 @@ TEACHING APPROACH:
 - Provide specific praise and encouragement
 - Make learning fun and interactive
 
-VOICE DELIVERY:
+VOICE DELIVERY - CRITICAL FOR SHORT RESPONSES:
+- Keep responses BRIEF and COMPLETE (1-2 sentences maximum)
 - Speak slowly and clearly for young learners
 - Use varied intonation to maintain engagement
 - Pause between instructions to allow processing time
 - Use excitement in your voice for achievements
-- Keep responses brief but complete (1-2 sentences maximum)
+- ALWAYS provide a complete thought in each response
+- Avoid run-on sentences or multiple ideas in one response
+
+RESPONSE LENGTH RULE: Every response must be 1-2 complete sentences that fully answer the student's question or need.
+
+CONVERSATION FLOW RULE: When you ask the student a question, STOP generating immediately after the question. Wait for their response before continuing. Do not ask multiple questions in one response.
 """
 
-# 1. ENCOURAGER AGENT
+# ENCOURAGER AGENT
 encourager_agent = Agent(
     name="Encourager",
     handoff_description="Specialist for motivation, praise, and building confidence when students feel discouraged",
@@ -307,12 +287,14 @@ encourager_agent = Agent(
     - Remind them that learning takes practice and mistakes are okay
     - Use lots of positive energy and cheerful language
     
+    CRITICAL: Keep responses to 1-2 complete sentences maximum.
+    CONVERSATION RULE: If you ask the student a question, stop immediately and wait for their answer.
     Always focus on effort over perfection. Make every student feel special and capable!
     """,
     tools=[]
 )
 
-# 2. PRONUNCIATION HELPER AGENT
+# PRONUNCIATION HELPER AGENT
 pronunciation_helper_agent = Agent(
     name="PronunciationHelper", 
     handoff_description="Specialist for helping when students mispronounce sounds or need pronunciation guidance",
@@ -326,12 +308,14 @@ pronunciation_helper_agent = Agent(
     - Ask them to try again with a positive, patient tone
     - Celebrate when they improve, even if not perfect
     
+    CRITICAL: Keep responses to 1-2 complete sentences maximum.
+    CONVERSATION RULE: If you ask the student to try a sound, stop immediately and wait for their attempt.
     Remember: pronunciation is hard work, and every attempt deserves praise!
     """,
     tools=[create_pronunciation_guide]
 )
 
-# 3. STORY TELLER TEACHER AGENT (Main Teaching)
+# STORY TELLER TEACHER AGENT (Main Teaching)
 story_teller_agent = Agent(
     name="StoryTellerTeacher",
     handoff_description="Main teacher who creates personalized stories based on student interests to teach lessons",
@@ -344,12 +328,14 @@ story_teller_agent = Agent(
     - Making every lesson feel like an adventure tailored just for them
     - Connecting reading skills to things they care about (dinosaurs, unicorns, etc.)
     
+    CRITICAL: Keep responses to 1-2 complete sentences maximum.
+    CONVERSATION RULE: If you ask the student a question about the story or lesson, stop immediately and wait for their answer.
     Remember: When learning feels personal and fun, children remember it better!
     """,
     tools=[create_personalized_story, get_student_profile]
 )
 
-# 4. TESTER AGENT
+# TESTER AGENT
 tester_agent = Agent(
     name="Tester",
     handoff_description="Specialist for assessing student knowledge through fun games, quizzes, and interactive tests",
@@ -363,12 +349,14 @@ tester_agent = Agent(
     - Give immediate positive feedback for effort
     - Help them see assessment as a chance to show off their learning
     
+    CRITICAL: Keep responses to 1-2 complete sentences maximum.
+    CONVERSATION RULE: Ask ONE question at a time, then stop and wait for the student's answer before asking the next question.
     Make testing feel like the most fun part of learning!
     """,
     tools=[create_learning_quiz]
 )
 
-# 5. SIMPLIFIER AGENT
+# SIMPLIFIER AGENT
 simplifier_agent = Agent(
     name="Simplifier",
     handoff_description="Specialist for breaking down confusing concepts and finding new ways to explain when students don't understand",
@@ -382,67 +370,14 @@ simplifier_agent = Agent(
     - Offer multiple ways to think about the same concept
     - Never make them feel bad for not understanding the first time
     
+    CRITICAL: Keep responses to 1-2 complete sentences maximum.
+    CONVERSATION RULE: If you ask the student if they understand or want to try something, stop immediately and wait for their response.
     Every child can learn - sometimes we just need to find the right way to explain it!
     """,
     tools=[simplify_concept, get_student_profile]
 )
 
-# 6. LESSON EVALUATOR AGENT (Text-only, Analytics)
-lesson_evaluator_agent = Agent(
-    name="LessonEvaluator",
-    instructions="""
-    You are the lesson evaluation specialist! Your job is to analyze learning conversations and extract insights.
-    
-    RESPONSIBILITIES:
-    - Monitor conversations between students and teaching agents
-    - Assess learning effectiveness (1-5 scale) based on student responses
-    - Identify what teaching methods work best for each student
-    - Update student profiles with learning insights
-    - Record accomplishments and progress milestones
-    - Provide mid-lesson feedback to other agents about what's working
-    
-    ANALYSIS FOCUS:
-    - Does the student seem engaged and understanding?
-    - What teaching style is most effective (visual, auditory, kinesthetic)?
-    - What interests/topics motivate this student most?
-    - Are there any confusion patterns or challenging areas?
-    - What accomplishments should be celebrated?
-    
-    Use tools to record sessions, update profiles, and track accomplishments.
-    """,
-    tools=[record_learning_session, update_student_learning_data, add_student_accomplishment, get_student_profile]
-)
-
-# 7. LESSON PLANNER AGENT (Text-only, Planning)
-lesson_planner_agent = Agent(
-    name="LessonPlanner", 
-    instructions="""
-    You are the lesson planning specialist! Your job is to create personalized learning paths.
-    
-    PRIMARY LEARNING OBJECTIVE: Alphabet recognition and letter sounds (phonemic awareness)
-    
-    RESPONSIBILITIES:
-    - Analyze student profiles to understand learning preferences and progress
-    - Create step-by-step lesson plans toward alphabet mastery
-    - Personalize lessons based on interests (dinosaurs, unicorns, fairy tales, etc.)
-    - Plan progression from current level to alphabet fluency
-    - Consider learning style (visual, auditory, kinesthetic) in lesson design
-    - Set realistic, achievable milestones
-    
-    LESSON PLAN STRUCTURE:
-    1. Current assessment (where is the student now?)
-    2. Specific learning objective (what will they learn today?)
-    3. Personalized approach (how does it connect to their interests?)
-    4. Step-by-step activities (concrete actions)
-    5. Practice reinforcement (how to solidify learning)
-    6. Assessment method (how to check understanding)
-    
-    Use tools to get student data and create detailed lesson plans.
-    """,
-    tools=[get_student_profile, create_new_lesson_plan, get_parent_dashboard_data]
-)
-
-# 8. ENHANCED MAIN TRIAGE AGENT - Routes to appropriate specialist with lesson plan awareness
+# MAIN TEACHER AGENT - Routes to appropriate specialist
 main_teacher_agent = Agent(
     name="MainTeacher",
     instructions=prompt_with_handoff_instructions(f"""
@@ -460,6 +395,8 @@ main_teacher_agent = Agent(
     - Tester: when they're ready to show what they've learned through games/quizzes
     - Simplifier: when they're confused and need concepts explained differently
     
+    CRITICAL: Keep responses to 1-2 complete sentences maximum.
+    CONVERSATION RULE: If you ask the student a question, stop immediately and wait for their answer.
     Always start with a warm greeting, check their lesson plan, and figure out what help they need today!
     """),
     handoffs=[encourager_agent, pronunciation_helper_agent, story_teller_agent, tester_agent, simplifier_agent],
@@ -467,125 +404,87 @@ main_teacher_agent = Agent(
 )
 
 # =============================================================================
-# VOICE PIPELINE CONFIGURATION
+# SIMPLIFIED VOICE MODE WITH COMPREHENSIVE LOGGING
 # =============================================================================
 
-async def setup_demo_lesson_plans():
-    """Create demo lesson plans for the system"""
-    print("🏗️ Setting up demo lesson plans and student profiles...\n")
-    
-    # Create lesson plans for demo students
-    demo_students = ["Emma", "Liam", "Sophia"]
-    
-    for student in demo_students:
-        # Let the lesson planner create a plan
-        planner_query = f"Create a lesson plan for {student} focusing on alphabet recognition and letter sounds"
-        await Runner.run(lesson_planner_agent, planner_query)
-    
-    print("✅ Demo lesson plans created!\n")
-
-async def run_text_example():
-    """Run a text-based example to show the new advanced learning system"""
-    print("=== ADVANCED PRESCHOOL READING AI - FULL SYSTEM DEMO ===\n")
-    print("🎯 Demonstrating the complete adaptive learning system:")
-    print("   • 🤗 Encourager - motivation and confidence building") 
-    print("   • 🗣️ PronunciationHelper - speech assistance")
-    print("   • 📚 StoryTellerTeacher - personalized story-based lessons")
-    print("   • 🎮 Tester - fun assessments and games")
-    print("   • 💡 Simplifier - concept clarification")
-    print("   • 📊 LessonEvaluator - learning analytics (background)")
-    print("   • 📋 LessonPlanner - curriculum planning (background)")
-    print("   • 💾 Database - persistent learning profiles\n")
-    
-    # Setup demo data
-    await setup_demo_lesson_plans()
-    
-    test_queries = [
-        ("Emma", "I'm feeling sad because reading is too hard for me"),  # → Encourager
-        ("Liam", "I can't say the 'th' sound correctly"),  # → PronunciationHelper  
-        ("Emma", "I want to learn about unicorns and the letter B"),  # → StoryTellerTeacher
-        ("Sophia", "Can you test me on what I learned about letters?"),  # → Tester
-        ("Liam", "I don't understand what a sight word is"),  # → Simplifier
-    ]
-    
-    with trace("Advanced Learning System Demo"):
-        for i, (student_name, query) in enumerate(test_queries, 1):
-            print(f"📝 Example {i} - Student: {student_name}")
-            print(f"👶 Child: {query}")
-            
-            # Main teaching interaction
-            result = await Runner.run(main_teacher_agent, f"Student {student_name} says: {query}")
-            print(f"👩‍🏫 Teacher: {result.final_output}")
-            
-            # Lesson evaluator analyzes the session (background)
-            evaluation_query = f"Analyze this learning session: Student {student_name} asked '{query}' and received teaching. Rate effectiveness and update profile."
-            eval_result = await Runner.run(lesson_evaluator_agent, evaluation_query)
-            print(f"📊 Analysis: {eval_result.final_output}")
-            
-            print("-" * 70)
-            print()
-
-async def demo_parent_dashboard():
-    """Show parent dashboard functionality"""
-    print("=== 👨‍👩‍👧‍👦 PARENT DASHBOARD DEMO ===\n")
-    
-    students = ["Emma", "Liam", "Sophia"]
-    
-    for student in students:
-        print(f"📊 Dashboard for {student}:")
-        dashboard_data = db.get_parent_dashboard(student)
-        
-        print(f"   Age: {dashboard_data['profile'].get('age', 'Unknown')}")
-        print(f"   Learning Style: {dashboard_data['profile'].get('learning_style', 'Unknown')}")
-        print(f"   Interests: {', '.join(dashboard_data['profile'].get('interests', []))}")
-        
-        if dashboard_data['recent_sessions']:
-            print(f"   Recent Sessions: {len(dashboard_data['recent_sessions'])}")
-            latest = dashboard_data['recent_sessions'][0]
-            print(f"   Latest Topic: {latest['topic']} (Effectiveness: {latest['effectiveness']}/5)")
-        
-        if dashboard_data['skill_progress']:
-            print("   Skill Progress:")
-            for skill in dashboard_data['skill_progress']:
-                print(f"     • {skill['category']}: {skill['achievements_count']} achievements (Confidence: {skill['average_confidence']}/5)")
-        
-        print("-" * 50)
-        print()
-
-async def run_voice_example():
-    """Run the voice-based chained agent system"""
-    print("\n=== 🎤 PRESCHOOL READING AI - VOICE MODE ===")
-    print("🎧 IMPORTANT: Make sure you have:")
-    print("   • Working microphone (for your voice)")
-    print("   • Speakers or headphones (to hear the teacher)")
-    print("   • Quiet environment")
-    print("")
-    print("📋 HOW IT WORKS:")
-    print("   1. Press Enter to start recording your voice")
-    print("   2. Speak your question (e.g., 'Help me with the letter B')")
-    print("   3. Press Enter again to stop recording")
-    print("   4. The AI teacher will respond with voice!")
-    print("   5. Type 'quit' to exit")
+async def run_simplified_voice_mode():
+    """Simplified voice mode with automatic alphabet lesson on startup and comprehensive logging"""
+    logger.info("🚀 Starting Preschool Reading AI - Simplified Voice Mode")
+    print("\n=== 🎤 PRESCHOOL READING AI - SIMPLIFIED VOICE MODE ===")
+    print("🎧 Make sure you have a microphone and speakers ready!")
     print("")
     
     # Test audio devices
     try:
-        samplerate = int(sd.query_devices(kind='input')['default_samplerate'])
+        input_device = sd.query_devices(kind='input')
+        samplerate = int(input_device['default_samplerate'])
+        logger.info(f"✅ Audio system ready - Sample rate: {samplerate} Hz")
         print(f"✅ Audio ready (sample rate: {samplerate} Hz)")
-    except Exception as e:
+    except (Exception, KeyError) as e:
+        logger.warning(f"⚠️ Audio setup issue: {e}")
         print(f"⚠️ Audio setup issue: {e}")
         print("   Continuing anyway...")
         samplerate = 44100
     
     print("\n" + "="*50)
+    
+    # Start with automatic alphabet lesson
+    logger.info("🎯 Starting automatic alphabet lesson")
+    print("🎯 Starting with a fun alphabet lesson!")
+    print("Press Enter to begin the alphabet lesson...")
+    input()
+    
+    # Automatic alphabet lesson
+    logger.info("👩‍🏫 Teacher beginning alphabet lesson")
+    print("👩‍🏫 Teacher: Starting alphabet lesson...")
+    
+    try:
+        # Simulate the teacher speaking the lesson
+        lesson_text = [
+            "🎵 The teacher is teaching the alphabet...",
+            "📚 'Hello! Let's learn about letters today!'",
+            "🔤 'A is for Apple - can you say A-A-Apple?'",
+            "🅱️ 'B is for Ball - B-B-Ball!'",
+            "©️ 'C is for Cat - C-C-Cat!'",
+            "🎉 'Great job! You're learning your letters!'"
+        ]
         
+        for line in lesson_text:
+            print(line)
+            logger.info(f"👩‍🏫 Teacher says: {line}")
+            await asyncio.sleep(0.5)
+        
+        # Small delay to simulate processing
+        await asyncio.sleep(2)
+        
+    except Exception as e:
+        logger.error(f"❌ Error in alphabet lesson: {e}")
+        print(f"Error in alphabet lesson: {e}")
+    
+    print("=" * 50)
+    print("🎤 Now you can ask questions! Try saying:")
+    print("   • 'Help me with the letter B'")
+    print("   • 'What sound does A make?'")
+    print("   • 'Tell me a story about letters'")
+    print("   • 'I'm feeling sad about reading'")
+    print("   • 'Test me on what I learned'")
+    print("=" * 50)
+    
+    # Simplified voice interaction loop
+    session_count = 0
     while True:
-        # Get user input
-        user_input = input("Press Enter to speak to the teacher (or type 'quit' to exit): ")
+        session_count += 1
+        logger.info(f"🔄 Starting voice session #{session_count}")
+        
+        print(f"\n🎤 Press Enter to speak (or type 'quit' to exit): ", end="")
+        user_input = input()
+        
         if user_input.lower() == 'quit':
-            print("Goodbye! Keep practicing your reading! 👋")
+            logger.info("👋 User requested to quit the program")
+            print("👋 Goodbye! Keep practicing your reading! 🌟")
             break
             
+        logger.info(f"🎤 User input: '{user_input}'")
         print("🎤 Listening... (Press Enter when done speaking)")
         
         # Record audio
@@ -597,13 +496,19 @@ async def run_voice_example():
             input()  # Wait for Enter key
             
         if not recorded_chunks:
-            print("No audio recorded. Please try again.")
+            logger.warning("❌ No audio recorded in this session")
+            print("❌ No audio recorded. Please try again.")
             continue
             
+        # Log audio recording details
+        audio_duration = len(recorded_chunks) * 0.1  # Approximate duration
+        logger.info(f"🎤 Audio recorded: {len(recorded_chunks)} chunks, ~{audio_duration:.1f}s duration")
+        
         # Process the recording
+        logger.info("🤔 Teacher is thinking about the student's question...")
         print("🤔 Teacher is thinking...")
         
-        # Create voice pipeline
+        # Create voice pipeline for main interaction
         pipeline = VoicePipeline(workflow=SingleAgentVoiceWorkflow(main_teacher_agent))
         
         # Concatenate recorded audio
@@ -611,27 +516,59 @@ async def run_voice_example():
         audio_input = AudioInput(buffer=recording)
         
         try:
-            # Run the voice pipeline with tracing
-            with trace("Preschool Reading Voice Demo"):
-                result = await pipeline.run(audio_input)
+            # Run the voice pipeline
+            logger.info("🎯 Processing student's voice input through AI pipeline")
+            result = await pipeline.run(audio_input)
+            
+            # Collect response audio and log teacher's text response
+            response_chunks = []
+            teacher_text_response = ""
+            student_transcription = ""
+            
+            async for event in result.stream():
+                if event.type == "voice_stream_event_audio":
+                    response_chunks.append(event.data)
+                elif event.type == "text_stream_event":
+                    # Capture the teacher's text response
+                    if hasattr(event, 'data'):
+                        teacher_text_response += event.data
+                        logger.info(f"👩‍🏫 Teacher thinking: '{event.data}'")
+                elif event.type == "transcription":
+                    # Capture the student's transcription
+                    if hasattr(event, 'data'):
+                        student_transcription = event.data
+                        logger.info(f"🎤 Student said: '{student_transcription}'")
+                        print(f"🎤 Student said: '{student_transcription}'")
+            
+            # Log the complete teacher response
+            if teacher_text_response:
+                logger.info(f"👩‍🏫 Teacher wants to say: '{teacher_text_response.strip()}'")
+                print(f"👩‍🏫 Teacher wants to say: '{teacher_text_response.strip()}'")
+            else:
+                logger.info("👩‍🏫 Teacher response text not captured")
+                print("👩‍🏫 Teacher responding with voice...")
+            
+            if response_chunks:
+                # Log the teacher's response
+                logger.info(f"👩‍🏫 Teacher responding with {len(response_chunks)} audio chunks")
+                print("👩‍🏫 Teacher is responding...")
                 
-                # Collect response audio
-                response_chunks = []
-                async for event in result.stream():
-                    if event.type == "voice_stream_event_audio":
-                        response_chunks.append(event.data)
+                # Play the response
+                response_audio = np.concatenate(response_chunks, axis=0)
+                response_duration = len(response_audio) / samplerate
+                logger.info(f"🎵 Playing teacher response: ~{response_duration:.1f}s duration")
                 
-                if response_chunks:
-                    # Play the response
-                    print("👩‍🏫 Teacher is responding...")
-                    response_audio = np.concatenate(response_chunks, axis=0)
-                    sd.play(response_audio, samplerate=samplerate)
-                    sd.wait()  # Wait for playback to finish
-                else:
-                    print("No audio response generated.")
-                    
+                sd.play(response_audio, samplerate=samplerate)
+                sd.wait()  # Wait for playback to finish
+                
+                logger.info("✅ Teacher response completed successfully")
+            else:
+                logger.warning("❌ No audio response generated by AI")
+                print("❌ No audio response generated.")
+                
         except Exception as e:
-            print(f"Error processing voice: {e}")
+            logger.error(f"❌ Error processing voice: {e}")
+            print(f"❌ Error processing voice: {e}")
             
         print("=" * 50)
 
@@ -640,49 +577,25 @@ async def run_voice_example():
 # =============================================================================
 
 async def main():
-    """Main function to demonstrate the advanced learning system"""
-    print("🎓 ADVANCED PRESCHOOL READING AI - INTELLIGENT LEARNING SYSTEM")
-    print("Based on OpenAI's Agents SDK with Advanced Learning Analytics")
-    print("=" * 70)
+    """Simplified main function with automatic alphabet lesson and comprehensive logging"""
+    logger.info("🎓 Starting Preschool Reading AI - Simplified Version")
+    print("🎓 PRESCHOOL READING AI - SIMPLIFIED VERSION")
+    print("Based on OpenAI's Agents SDK")
+    print("=" * 50)
     
-    # Ask user what they want to do
-    print("\nChoose your experience:")
-    print("1. 🎤 Voice Mode (speak and hear the AI teacher)")
-    print("2. 💬 Full System Demo (see all agents working together)")
-    print("3. 👨‍👩‍👧‍👦 Parent Dashboard (see learning analytics)")
-    print("4. 🎯 Complete Experience (demo + dashboard + voice)")
+    # Start with alphabet lesson automatically
+    await run_simplified_voice_mode()
     
-    choice = input("\nEnter your choice (1, 2, 3, or 4): ").strip()
-    
-    if choice == "1":
-        await run_voice_example()
-    elif choice == "2":
-        await run_text_example()
-    elif choice == "3":
-        await demo_parent_dashboard()
-    elif choice == "4":
-        await run_text_example()
-        await demo_parent_dashboard()
-        voice_choice = input("\nReady for voice mode? (y/n): ").lower()
-        if voice_choice == 'y':
-            await run_voice_example()
-    else:
-        print("Invalid choice. Starting full system demo...")
-        await run_text_example()
-    
-    print("\n✨ Thank you for trying the Advanced Preschool Reading AI!")
-    print("This intelligent learning system features:")
-    print("• 🎯 Smart routing to specialized teaching agents")
-    print("• 🤗 Encourager for motivation and confidence building") 
-    print("• 🗣️ PronunciationHelper for speech correction and guidance")
-    print("• 📚 StoryTellerTeacher for personalized, interest-based lessons")
-    print("• 🎮 Tester for fun assessments and educational games")
-    print("• 💡 Simplifier for breaking down confusing concepts")
-    print("• 📊 LessonEvaluator for continuous learning analytics")
-    print("• 📋 LessonPlanner for adaptive curriculum planning")
-    print("• 💾 Persistent database tracking individual progress")
-    print("• 👨‍👩‍👧‍👦 Parent dashboard with detailed learning insights")
-    print("\nThis creates a truly intelligent, adaptive, and personalized learning experience!")
+    logger.info("✨ Preschool Reading AI session completed")
+    print("\n✨ Thank you for trying the Preschool Reading AI!")
+    print("This system helps children learn to read through:")
+    print("• 🎯 Personalized lessons based on interests")
+    print("• 🤗 Encouragement and confidence building") 
+    print("• 🗣️ Pronunciation help and guidance")
+    print("• 📚 Fun stories and interactive learning")
+    print("• 🎮 Games and assessments")
+    print("• 💡 Clear explanations when confused")
+    print("\nKeep practicing and have fun learning! 🌟")
 
 if __name__ == "__main__":
     asyncio.run(main()) 
