@@ -1,0 +1,7 @@
+openai-agents
+openai-agents[voice]
+sounddevice
+numpy
+pydantic
+asyncio
+python-dotenv 
