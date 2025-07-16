@@ -18,14 +18,18 @@ try:
     from agents.extensions.handoff_prompt import prompt_with_handoff_instructions
     from agents.voice import AudioInput, SingleAgentVoiceWorkflow, VoicePipeline
     from pydantic import BaseModel
+    from dotenv import load_dotenv
 except ImportError as e:
     print(f"Missing required package: {e}")
     print("Please install with: pip install openai-agents 'openai-agents[voice]' sounddevice numpy pydantic")
     exit(1)
 
+# Load environment variables from .env file
+load_dotenv()
+
 # Set your OpenAI API key
 if not os.getenv("OPENAI_API_KEY"):
-    print("Please set your OPENAI_API_KEY environment variable")
+    print("Please set your OPENAI_API_KEY environment variable or add it to your .env file")
     exit(1)
 
 # =============================================================================
@@ -241,16 +245,30 @@ async def run_text_example():
 
 async def run_voice_example():
     """Run the voice-based chained agent system"""
-    print("\n=== PRESCHOOL READING AI - VOICE EXAMPLE ===")
-    print("This will use your microphone and speakers!")
-    print("Press Enter to speak, then press Enter again to stop recording.")
-    print("Type 'quit' to exit.\n")
+    print("\n=== 🎤 PRESCHOOL READING AI - VOICE MODE ===")
+    print("🎧 IMPORTANT: Make sure you have:")
+    print("   • Working microphone (for your voice)")
+    print("   • Speakers or headphones (to hear the teacher)")
+    print("   • Quiet environment")
+    print("")
+    print("📋 HOW IT WORKS:")
+    print("   1. Press Enter to start recording your voice")
+    print("   2. Speak your question (e.g., 'Help me with the letter B')")
+    print("   3. Press Enter again to stop recording")
+    print("   4. The AI teacher will respond with voice!")
+    print("   5. Type 'quit' to exit")
+    print("")
     
-    # Get audio device info
+    # Test audio devices
     try:
         samplerate = int(sd.query_devices(kind='input')['default_samplerate'])
-    except:
-        samplerate = 44100  # fallback
+        print(f"✅ Audio ready (sample rate: {samplerate} Hz)")
+    except Exception as e:
+        print(f"⚠️ Audio setup issue: {e}")
+        print("   Continuing anyway...")
+        samplerate = 44100
+    
+    print("\n" + "="*50)
         
     while True:
         # Get user input
@@ -318,12 +336,25 @@ async def main():
     print("Based on OpenAI's Agents SDK with Patient Teacher Instructions")
     print("=" * 60)
     
-    # First run text examples to show the chained agents
-    await run_text_example()
+    # Ask user what they want to do
+    print("\nChoose your experience:")
+    print("1. 🎤 Voice Mode (speak and hear the AI teacher)")
+    print("2. 💬 Text Demo (see how agents work)")
+    print("3. 🎯 Both (text demo first, then voice)")
     
-    # Ask user if they want to try voice mode
-    voice_choice = input("\nWould you like to try voice mode? (y/n): ").lower()
-    if voice_choice == 'y':
+    choice = input("\nEnter your choice (1, 2, or 3): ").strip()
+    
+    if choice == "1":
+        await run_voice_example()
+    elif choice == "2":
+        await run_text_example()
+    elif choice == "3":
+        await run_text_example()
+        voice_choice = input("\nReady for voice mode? (y/n): ").lower()
+        if voice_choice == 'y':
+            await run_voice_example()
+    else:
+        print("Invalid choice. Starting voice mode...")
         await run_voice_example()
     
     print("\n✨ Thank you for trying the Preschool Reading AI!")
