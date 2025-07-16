@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Preschool Reading AI - Chained Voice Agent Example
+Preschool Reading AI - Chained Voice Agent Example 
 Based on OpenAI's Agents SDK documentation for chained voice agents
 """
 
